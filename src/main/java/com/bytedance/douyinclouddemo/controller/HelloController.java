@@ -41,6 +41,7 @@ public class HelloController {
         JsonResponse response = new JsonResponse();
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
+        headers.clear();
         headers.setContentType(MediaType.APPLICATION_JSON);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         // 构建请求体
@@ -70,10 +71,12 @@ public class HelloController {
       
     }
     @RequestMapping(value = "/api/post", method = {RequestMethod.HEAD, RequestMethod.POST})
-    public ResponseEntity<String> receiveAndProcessJsonData(@RequestBody(required = false) String jsonData)
+    public JsonResponse receiveAndProcessJsonData(@RequestBody(required = false) String jsonData)
     {
-        System.out.println(jsonData);
-        return ResponseEntity.ok("Data received and precesssed successfully");
+        JsonResponse response = new JsonResponse();
+        response.success(jsonData);
+        //System.out.println(jsonData);
+        return response;
     }
     
     
