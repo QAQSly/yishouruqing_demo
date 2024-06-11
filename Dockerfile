@@ -11,7 +11,7 @@ RUN mvn -s /opt/application/settings.xml -f /opt/application/pom.xml clean packa
 # 将构建产物jar包拷贝到运行时目录中
 RUN chmod -R 777 /opt/application/run.sh
 
-EXPOSE 443
+EXPOSE 8000
 
 CMD ["sh","/opt/application/run.sh"]
 
