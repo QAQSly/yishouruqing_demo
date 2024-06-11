@@ -1,7 +1,5 @@
 server:
   port: 8000
-  servlet:
-    context-path: /api
   ssl:
     key-store-type: JKS
     key-store: classpath:mykey.jks

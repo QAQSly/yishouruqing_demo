@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping
 public class HelloController {
 
-    @GetMapping("/get_open_id")
+    @GetMapping("/api/get_open_id")
     public JsonResponse getOpenID(@RequestHeader("X-TT-OPENID") String openID) {
         JsonResponse response = new JsonResponse();
         if(openID.isEmpty()){
@@ -23,7 +23,7 @@ public class HelloController {
         }
         return response;
     }
-    @RequestMapping(value = "/post", method = {RequestMethod.HEAD, RequestMethod.POST})
+    @RequestMapping(value = "/api/post", method = {RequestMethod.HEAD, RequestMethod.POST})
     public ResponseEntity<String> receiveAndProcessJsonData(@RequestBody(required = false) String jsonData)
     {
         System.out.println(jsonData);
@@ -31,7 +31,7 @@ public class HelloController {
     }
     
 
-    @PostMapping("/text/antidirt")
+    @PostMapping("/api/text/antidirt")
     public JsonResponse textAntidirt(@RequestBody TextAntidirtRequest textAntidirtRequest) throws JsonProcessingException {
 
         TextAntidirt textAntidirt = new TextAntidirt(textAntidirtRequest.getContent());
