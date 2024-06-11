@@ -78,6 +78,15 @@ public class HelloController {
         //System.out.println(jsonData);
         return response;
     }
+
+    @RequestMapping(value = "/live_data_callback", method = {RequestMethod.HEAD, RequestMethod.POST})
+    public JsonResponse liveDataCallBack(@RequestBody(required = false) String jsonData)
+    {
+        JsonResponse response = new JsonResponse();
+        response.success(jsonData);
+        //System.out.println(jsonData);
+        return response;
+    }
     
     
     
