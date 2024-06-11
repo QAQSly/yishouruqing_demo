@@ -1,0 +1,9 @@
+server:
+  port: 443
+  servlet:
+    context-path: /api
+  ssl:
+    key-store-type: JKS
+    key-store: classpath:mykey.jks
+    key-store-password: Hl7!JP4J*7Ka@kLN
+    key-alias: server
