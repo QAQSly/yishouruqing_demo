@@ -12,6 +12,7 @@ import java.io.IOException;
 
 @Component
 public class AppFilter extends OncePerRequestFilter {
+    
     @Value("${server.port}")
     private int httpsPort;
     @Override
