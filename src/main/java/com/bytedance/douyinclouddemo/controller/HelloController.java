@@ -5,12 +5,17 @@ import com.bytedance.douyinclouddemo.model.TextAntidirt;
 import com.bytedance.douyinclouddemo.model.TextAntidirtRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
@@ -22,6 +27,10 @@ public class HelloController {
     private String appSecret;
     @Value("${app.app_grant_type}")
     private String appGrant_Type;
+    
+    
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/api/get_open_id")
     public JsonResponse getOpenID(@RequestHeader("X-TT-OPENID") String openID) {
@@ -34,24 +43,23 @@ public class HelloController {
         return response;
     }
     
-    @RequestMapping(value = "api/getAccessToken", method = {RequestMethod.HEAD, RequestMethod.POST} )
+    @PostMapping("api/getAccessToken")
     public JsonResponse getAccessToken() throws JsonProcessingException {
-        String url = "https://developer.toutiao.com/api/apps/v2/token";
+        String url = "https://minigame.zijieapi.com/mgplatform/api/apps/v2/token";
         // 构建发送响应等
         JsonResponse response = new JsonResponse();
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.clear();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        Map<String, String> map = new HashMap<>();
         // 构建请求体
         System.out.println(appId + " and " + appSecret + " and " + appGrant_Type + " and " + headers.getContentType());
-        map.add("appid", appId);
-        map.add("secret", appSecret);
-        map.add("grant_type", appGrant_Type);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonString = objectMapper.writeValueAsString(map);
-        HttpEntity<String> request = new HttpEntity<>(jsonString, headers);
+        map.put("appid", appId);
+        map.put("secret", appSecret);
+        map.put("grant_type", appGrant_Type);
+        
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(map, headers);
         
         // 发送请求
         try {
@@ -83,6 +91,7 @@ public class HelloController {
     public JsonResponse liveDataCallBack(@RequestBody(required = false) String jsonData)
     {
         JsonResponse response = new JsonResponse();
+        messagingTemplate.convertAndSend("/topic/live_updates", jsonData);
         response.success(jsonData);
         //System.out.println(jsonData);
         return response;
