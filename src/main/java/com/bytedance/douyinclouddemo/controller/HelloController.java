@@ -88,6 +88,30 @@ public class HelloController {
         return response;
     }
     
+    @PostMapping("/live_data/task/start")
+    public JsonResponse startTask(@RequestBody(required = false) String jsonData) {
+        JsonResponse response = new JsonResponse();
+        response.success(jsonData);
+        //System.out.println(jsonData);
+        return response;
+    }
+    
+    @PostMapping("/api/gift/top_gift")
+    public JsonResponse topGift(@RequestBody(required = false) String jsonData) {
+        JsonResponse response = new JsonResponse();
+        response.success(jsonData);
+        //System.out.println(jsonData);
+        return response;
+    }
+
+    @PostMapping("/web_socket/on_connect/v2")
+    public JsonResponse ws(@RequestBody(required = false) String jsonData) {
+        JsonResponse response = new JsonResponse();
+        response.success(jsonData);
+        //System.out.println(jsonData);
+        return response;
+    }
+    
     
     
 
