@@ -9,3 +9,5 @@ app:
   app_id: tt654b13f6fa7d5b6910
   app_secret: d60130eecb7ba6803bd56f984ae822ceed5e1d73 
   app_grant_type: client_credential
+  app_room_id: 1120981200010014472
+  app_sec_gift_id_list: 1, 52, 199, 10, 99, 520

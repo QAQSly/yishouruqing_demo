@@ -21,12 +21,19 @@ import java.util.Map;
 @RestController
 @RequestMapping
 public class HelloController {
+    // ------ 平台验证access token ------
     @Value("${app.app_id}")
     private String appId;
     @Value("${app.app_secret}")
     private String appSecret;
     @Value("${app.app_grant_type}")
     private String appGrant_Type;
+    
+    // ------ 置顶礼物 ------
+    @Value("${app.app_room_id}")
+    private String appRoomId;
+    @Value("${app.app_sec_gift_id_list}")
+    private String[] appSecGiftIdList;
     
     
     @Autowired
@@ -42,7 +49,7 @@ public class HelloController {
         }
         return response;
     }
-    
+    private String accessToken;
     @PostMapping("api/getAccessToken")
     public JsonResponse getAccessToken() throws JsonProcessingException {
         String url = "https://minigame.zijieapi.com/mgplatform/api/apps/v2/token";
@@ -86,17 +93,25 @@ public class HelloController {
         //System.out.println(jsonData);
         return response;
     }
+    private String temp;
 
     @RequestMapping(value = "/live_data_callback", method = {RequestMethod.HEAD, RequestMethod.POST})
     public JsonResponse liveDataCallBack(@RequestBody(required = false) String jsonData)
     {
         JsonResponse response = new JsonResponse();
-        messagingTemplate.convertAndSend("/topic/live_updates", jsonData);
-        response.success(jsonData);
-        //System.out.println(jsonData);
+        if (jsonData != null) {
+            // 第三方
+            temp = jsonData;
+        } 
+        
+        
+        response.success(temp);
         return response;
+            // 客户端
+       
     }
     
+    // ------ 开启任务推送 ------
     @PostMapping("/live_data/task/start")
     public JsonResponse startTask(@RequestBody(required = false) String jsonData) {
         JsonResponse response = new JsonResponse();
@@ -104,15 +119,42 @@ public class HelloController {
         //System.out.println(jsonData);
         return response;
     }
-    
+   
+    private String top_gift_temp;
+    // ------ 置顶礼物 ------
     @PostMapping("/api/gift/top_gift")
     public JsonResponse topGift(@RequestBody(required = false) String jsonData) {
+        String url = "POST https://webcast.bytedance.com/api/gift/top_gift";
         JsonResponse response = new JsonResponse();
-        response.success(jsonData);
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.clear();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-token", accessToken);
+        
+        Map<String, String> map = new HashMap<>();
+        
+        map.put("room_id", appRoomId);
+        map.put("app_id", appId);
+        // map.put("sec_gift_id_list", appSecGiftIdList);
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(map, headers);
+        
+        try {
+            ResponseEntity<String> result = restTemplate.postForEntity(url,  request, String.class);
+            String responseBody = result.getBody();
+            if (responseBody != null) {
+                top_gift_temp = responseBody;
+            }
+            response.success(top_gift_temp);
+        } catch (Exception e) {
+            response.failure("Failed");
+        }
         //System.out.println(jsonData);
         return response;
     }
+    
 
+    // ------ web_socket ------
     @PostMapping("/web_socket/on_connect/v2")
     public JsonResponse ws(@RequestBody(required = false) String jsonData) {
         JsonResponse response = new JsonResponse();
@@ -123,7 +165,7 @@ public class HelloController {
     
     
     
-
+    // ------脏文本------
     @PostMapping("/api/text/antidirt")
     public JsonResponse textAntidirt(@RequestBody TextAntidirtRequest textAntidirtRequest) throws JsonProcessingException {
 
