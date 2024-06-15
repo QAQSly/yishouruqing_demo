@@ -1,0 +1,341 @@
+package com.bytedance.douyinclouddemo.controller;
+
+import com.bytedance.douyinclouddemo.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+
+@RestController
+@RequestMapping
+public class MainController {
+    // ------ 平台验证access token ------
+    @Value("${app.app_id}")
+    private String appId;
+    @Value("${app.app_secret}")
+    private String appSecret;
+    @Value("${app.app_grant_type}")
+    private String appGrant_Type;
+    
+    // ------ 置顶礼物 ------
+    @Value("${app.app_room_id}")
+    private String appRoomId;
+    @Value("${app.app_sec_gift_id_list}")
+    private String[] appSecGiftIdList;
+    
+    
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
+    // --------从请求头获取openid-------
+    @GetMapping("/api/get_open_id")
+    public JsonResponse getOpenID(@RequestHeader("X-TT-OPENID") String openID) {
+        JsonResponse response = new JsonResponse();
+        if(openID.isEmpty()){
+            response.failure("openid is empty");
+        }else{
+            response.success(openID);
+        }
+        return response;
+    }
+    
+    private String accessToken = "0801121846396b634661733637752f3243473141686c48776a513d3d";
+    // ------获取access token-------
+    @PostMapping("api/getAccessToken")
+    public AccessTokenResponse getAccessToken() throws JsonProcessingException {
+        String url = "https://minigame.zijieapi.com/mgplatform/api/apps/v2/token";
+        // 构建发送响应等
+        AccessTokenResponse own = null;
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.clear();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        Map<String, String> map = new HashMap<>();
+        // 构建请求体
+        System.out.println("------请求体" + appId + " and " + appSecret + " and " + appGrant_Type + " and " + headers.getContentType());
+        map.put("appid", appId);
+        map.put("secret", appSecret);
+        map.put("grant_type", appGrant_Type);
+        
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(map, headers);
+        
+        // 发送请求
+        try {
+            ResponseEntity<String> result = restTemplate.postForEntity(url, request, String.class);
+            // 解析响应
+            String responseBody = result.getBody();
+            System.out.println("------响应体" + responseBody);
+            own = new ObjectMapper().readValue(responseBody, AccessTokenResponse.class);
+            own.StringToOwn(own);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        accessToken = own.getData().getAccess_token();
+        System.out.println("accessToken = " + accessToken);
+        return own;
+      
+    }
+    // ------ 接收post请求 测试用------
+    @RequestMapping(value = "/api/post", method = {RequestMethod.HEAD, RequestMethod.POST})
+    public AccessTokenResponse receiveAndProcessJsonData(@RequestBody(required = false) String jsonData)
+    {
+        
+        ObjectMapper mapper = new ObjectMapper();
+        AccessTokenResponse own = null;
+        try {
+            own = mapper.readValue(jsonData, AccessTokenResponse.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        own.StringToOwn(own);
+        //System.out.println(jsonData);
+        return own;
+    }
+    private String temp;
+
+    // ------ 直播数据回调 ------
+    @RequestMapping(value = "/live_data_callback", method = {RequestMethod.HEAD, RequestMethod.POST})
+    public JsonResponse liveDataCallBack(@RequestBody(required = false) String jsonData)
+    {
+        JsonResponse response = new JsonResponse();
+        if (jsonData != null) {
+            // 第三方
+            temp = jsonData;
+        } 
+        
+        
+        response.success(jsonData);
+        return response;
+            // 客户端
+       
+    }
+    
+    // ------ 开启任务推送 ------
+    @PostMapping("/live_data/task/start")
+    public TaskStartResponse startTask(@RequestBody(required = false) String jsonData) {
+        String url = "https://webcast.bytedance.com/api/live_data/task/start";
+        RestTemplate restTemplate = new RestTemplate();
+        // JsonResponse response = new JsonResponse();
+        HttpHeaders headers = new HttpHeaders();
+        headers.clear();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("access-token", accessToken);
+        TaskStartRequest taskStartRequest = new TaskStartRequest();
+        taskStartRequest.setAppid(appId);
+        taskStartRequest.setRoomid(appRoomId);
+        taskStartRequest.setMsg_type("live_comment");
+        HttpEntity<TaskStartRequest> requestHttpEntity = new HttpEntity<>(taskStartRequest, headers);
+        
+        ResponseEntity<String> result = restTemplate.postForEntity(url, requestHttpEntity, String.class);
+        
+        TaskStartResponse response = null;
+        System.out.println("------task start -------" + result.getBody());
+        try {
+            String str = result.getBody();
+            response = new ObjectMapper().readValue(str, TaskStartResponse.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println(jsonData);
+        return response;
+    }
+   
+    private String top_gift_temp;
+    // ------ 置顶礼物 ------
+    @PostMapping("/api/gift/top_gift")
+    public Top_GiftResponse topGift(@RequestBody(required = false) String jsonData) {
+        String url = "https://webcast.bytedance.com/api/gift/top_gift";
+        // JsonResponse response = new JsonResponse();
+        Top_GiftResponse response = null;
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.clear();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-token", accessToken);
+        
+        //  Map<String, String> map = new HashMap<>();
+        
+        Top_GiftRequest top_gift_request =  new Top_GiftRequest();
+        top_gift_request.setApp_id(appId);
+        top_gift_request.setRoom_id(appRoomId);
+        top_gift_request.setSec_gift_id_list(appSecGiftIdList);
+        
+        HttpEntity<Top_GiftRequest> request = new HttpEntity<>(top_gift_request, headers);
+        
+        try {
+            ResponseEntity<String> result = restTemplate.postForEntity(url,  request, String.class);
+            String responseBody = result.getBody();
+            System.out.println("top_gift 响应体 ------ " + responseBody);
+            response = new ObjectMapper().readValue(responseBody, Top_GiftResponse.class);
+            response.StringToOwn(response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //System.out.println(jsonData);
+        return response;
+    }
+    
+
+    // ------ web_socket ------
+    @PostMapping("/web_socket/on_connect/v2")
+    public JsonResponse ws(@RequestBody(required = false) String jsonData) {
+        JsonResponse response = new JsonResponse();
+        response.success(jsonData);
+        //System.out.println(jsonData);
+        return response;
+    }
+    
+    
+    
+    // ------脏文本------
+    @PostMapping("/api/text/antidirt")
+    public JsonResponse textAntidirt(@RequestBody TextAntidirtRequest textAntidirtRequest) throws JsonProcessingException {
+
+        TextAntidirt textAntidirt = new TextAntidirt(textAntidirtRequest.getContent());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String jsonString = objectMapper.writeValueAsString(textAntidirt);
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(jsonString, headers);
+
+        String url = "http://developer.toutiao.com/api/v2/tags/text/antidirt";
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+        String responseBody = responseEntity.getBody();
+        JsonResponse response = new JsonResponse();
+        response.success(responseBody);
+        return response;
+    }
+   
+    // ------停止推送------
+    @PostMapping("/live_data/task/stop")
+    public TaskStopResponse TaskStop() {
+        String url = "https://webcast.bytedance.com/api/live_data/task/stop";
+        RestTemplate restTemplate = new RestTemplate();
+        // JsonResponse response = new JsonResponse();
+        HttpHeaders headers = new HttpHeaders();
+        headers.clear();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("access-token", accessToken);
+        TaskStartRequest taskStartRequest = new TaskStartRequest();
+        taskStartRequest.setAppid(appId);
+        taskStartRequest.setRoomid(appRoomId);
+        taskStartRequest.setMsg_type("live_comment");
+        HttpEntity<TaskStartRequest> requestHttpEntity = new HttpEntity<>(taskStartRequest, headers);
+
+        ResponseEntity<String> result = restTemplate.postForEntity(url, requestHttpEntity, String.class);
+
+        TaskStopResponse response = null;
+        System.out.println("------task start -------" + result.getBody());
+        try {
+            String str = result.getBody();
+            response = new ObjectMapper().readValue(str, TaskStopResponse.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println(jsonData);
+        return response; 
+    }
+    
+    // ------获取任务状态------
+   @GetMapping("/live_data/task/status")
+   public TaskStatusResponse TaskStatus() {
+        String url = "https://webcast.bytedance.com/api/live_data/task/get";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.clear();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("access-token", accessToken);
+        TaskStatusRequest taskStatusRequest = new TaskStatusRequest();
+        taskStatusRequest.setAppid(appId);
+        taskStatusRequest.setRoomid(appRoomId);
+        taskStatusRequest.setMsg_type("live_comment");
+        HttpEntity<TaskStatusRequest> requestHttpEntity = new HttpEntity<>(taskStatusRequest, headers);
+        System.out.println("------requestHttpEntity------" + requestHttpEntity);
+        TaskStatusResponse response = null;
+        try {
+            ResponseEntity<String> result = restTemplate.getForEntity(url, String.class, requestHttpEntity);
+            String str = result.getBody();
+            response = new ObjectMapper().readValue(str, TaskStatusResponse.class);
+            System.out.println("------task status -------" + result.getBody());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+   }
+   
+   // ------获取失败数据------
+   @GetMapping("/live_data/task/fail_data/get")
+    public Fail_DataResponse fail_data() {
+        String url = "https://webcast.bytedance.com/api/live_data/task/fail_data/get";
+       RestTemplate restTemplate = new RestTemplate();
+       HttpHeaders headers = new HttpHeaders();
+       headers.clear();
+       headers.setContentType(MediaType.APPLICATION_JSON);
+       headers.set("access-token", accessToken);
+       Fail_DataRequest fail_DataRequest = new Fail_DataRequest();
+       fail_DataRequest.setRoomid(appRoomId);
+       fail_DataRequest.setAppid(appId);
+       fail_DataRequest.setPage_num(1);
+       fail_DataRequest.setPage_size(5);
+       fail_DataRequest.setMsg_type("live_comment");
+       HttpEntity<Fail_DataRequest> requestHttpEntity = new HttpEntity<>(fail_DataRequest, headers);
+       System.out.println("------requestHttpEntity------" + requestHttpEntity);
+       Fail_DataResponse response = null;
+       try {
+           ResponseEntity<String> result = restTemplate.getForEntity(url, String.class, requestHttpEntity);
+           String str = result.getBody();
+           response = new ObjectMapper().readValue(str, Fail_DataResponse.class);
+           System.out.println("------task status -------" + result.getBody());
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+       return response;
+   }
+   
+   // ------粉丝团------
+   @GetMapping("/live_data/fans_club/get_info")
+   public Fans_ClubResponse Fans_ClubInfo() {
+       String url = "https://webcast.bytedance.com/api/live_data/fans_club/get_info";
+       RestTemplate restTemplate = new RestTemplate();
+       HttpHeaders headers = new HttpHeaders();
+       headers.clear();
+       headers.setContentType(MediaType.APPLICATION_JSON);
+       headers.set("access-token", accessToken);
+       Fans_ClubRequest fans_ClubRequest = new Fans_ClubRequest();
+       fans_ClubRequest.setRoomid(appRoomId);
+       fans_ClubRequest.setAnchor_openid("1001");
+       fans_ClubRequest.setUser_openids("1,2");
+       
+       HttpEntity<Fans_ClubRequest> requestHttpEntity = new HttpEntity<>(fans_ClubRequest, headers);
+       System.out.println("------requestHttpEntity------" + requestHttpEntity);
+       Fans_ClubResponse response = null;
+       try {
+           ResponseEntity<String> result = restTemplate.getForEntity(url, String.class, requestHttpEntity);
+           String str = result.getBody();
+           response = new ObjectMapper().readValue(str, Fans_ClubResponse.class);
+           System.out.println("------task status -------" + result.getBody());
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+       return response;
+   }
+   
+
+   
+        
+}
