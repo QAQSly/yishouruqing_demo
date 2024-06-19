@@ -52,7 +52,7 @@ public class MainController {
     // ------获取access token-------
     // @PostMapping("api/getAccessToken")
     @RequestMapping(value = "/api/getAccessToken", method = {RequestMethod.HEAD, RequestMethod.POST})
-    public AccessTokenResponse getAccessToken() throws JsonProcessingException {
+    public String getAccessToken() throws JsonProcessingException {
         String url = "https://minigame.zijieapi.com/mgplatform/api/apps/v2/token";
         // 构建发送响应等
         AccessTokenResponse own = null;
@@ -70,10 +70,11 @@ public class MainController {
         HttpEntity<Map<String, String>> request = new HttpEntity<>(map, headers);
         
         // 发送请求
+        String responseBody = null;
         try {
             ResponseEntity<String> result = restTemplate.postForEntity(url, request, String.class);
             // 解析响应
-            String responseBody = result.getBody();
+            responseBody = result.getBody();
             System.out.println("------响应体" + responseBody);
             own = new ObjectMapper().readValue(responseBody, AccessTokenResponse.class);
             own.StringToOwn(own);
@@ -81,8 +82,8 @@ public class MainController {
             e.printStackTrace();
         }
         accessToken = own.getData().getAccess_token();
-        System.out.println("accessToken = " + accessToken);
-        return own;
+        // System.out.println("accessToken = " + accessToken);
+        return responseBody;
       
     }
     // ------ 接收post请求 测试用------
@@ -123,7 +124,7 @@ public class MainController {
     // ------ 开启任务推送 ------
     // @PostMapping("/live_data/task/start")
     @RequestMapping(value = "/live_data/task/start", method = {RequestMethod.HEAD, RequestMethod.POST}) 
-    public TaskStartResponse startTask(@RequestBody(required = false) String jsonData) {
+    public String startTask(@RequestBody(required = false) String jsonData) {
         String url = "https://webcast.bytedance.com/api/live_data/task/start";
         RestTemplate restTemplate = new RestTemplate();
         // JsonResponse response = new JsonResponse();
@@ -140,22 +141,23 @@ public class MainController {
         ResponseEntity<String> result = restTemplate.postForEntity(url, requestHttpEntity, String.class);
         
         TaskStartResponse response = null;
-        System.out.println("------task start -------" + result.getBody());
+        // System.out.println("------task start -------" + result.getBody());
+        String responseBody = null;
         try {
-            String str = result.getBody();
-            response = new ObjectMapper().readValue(str, TaskStartResponse.class);
+            responseBody = result.getBody();
+            response = new ObjectMapper().readValue(responseBody, TaskStartResponse.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
         //System.out.println(jsonData);
-        return response;
+        return responseBody;
     }
    
     private String top_gift_temp;
     // ------ 置顶礼物 ------
     //  @PostMapping("/api/gift/top_gift")
     @RequestMapping(value = "/api/gift/top_gift", method = {RequestMethod.HEAD, RequestMethod.POST})
-    public Top_GiftResponse topGift(@RequestBody(required = false) String jsonData) {
+    public String topGift(@RequestBody(required = false) String jsonData) {
         String url = "https://webcast.bytedance.com/api/gift/top_gift";
         // JsonResponse response = new JsonResponse();
         Top_GiftResponse response = null;
@@ -174,10 +176,11 @@ public class MainController {
         
         HttpEntity<Top_GiftRequest> request = new HttpEntity<>(top_gift_request, headers);
         
+        String responseBody = null;
         try {
             ResponseEntity<String> result = restTemplate.postForEntity(url,  request, String.class);
-            String responseBody = result.getBody();
-            System.out.println("top_gift 响应体 ------ " + responseBody);
+            responseBody = result.getBody();
+            // System.out.println("top_gift 响应体 ------ " + responseBody);
             response = new ObjectMapper().readValue(responseBody, Top_GiftResponse.class);
             response.StringToOwn(response);
             
@@ -185,7 +188,7 @@ public class MainController {
             e.printStackTrace();
         }
         //System.out.println(jsonData);
-        return response;
+        return responseBody;
     }
     
 
@@ -229,7 +232,7 @@ public class MainController {
     // ------停止推送------
     // @PostMapping("/live_data/task/stop")
     @RequestMapping(value = "/live_data/task/stop", method = {RequestMethod.HEAD, RequestMethod.POST})
-    public TaskStopResponse TaskStop() {
+    public String TaskStop() {
         String url = "https://webcast.bytedance.com/api/live_data/task/stop";
         RestTemplate restTemplate = new RestTemplate();
         // JsonResponse response = new JsonResponse();
@@ -246,21 +249,22 @@ public class MainController {
         ResponseEntity<String> result = restTemplate.postForEntity(url, requestHttpEntity, String.class);
 
         TaskStopResponse response = null;
-        System.out.println("------task start -------" + result.getBody());
+        // System.out.println("------task start -------" + result.getBody());
+        String str = null;
         try {
-            String str = result.getBody();
+            str = result.getBody();
             response = new ObjectMapper().readValue(str, TaskStopResponse.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
         //System.out.println(jsonData);
-        return response; 
+        return str; 
     }
     
     // ------获取任务状态------
    // @GetMapping("/live_data/task/status")
    @RequestMapping(value = "/live_data/task/status", method = {RequestMethod.HEAD, RequestMethod.GET})
-   public TaskStatusResponse TaskStatus() {
+   public String TaskStatus() {
         String url = "https://webcast.bytedance.com/api/live_data/task/get";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -272,23 +276,24 @@ public class MainController {
         taskStatusRequest.setRoomid(appRoomId);
         taskStatusRequest.setMsg_type("live_comment");
         HttpEntity<TaskStatusRequest> requestHttpEntity = new HttpEntity<>(taskStatusRequest, headers);
-        System.out.println("------requestHttpEntity------" + requestHttpEntity);
+        // System.out.println("------requestHttpEntity------" + requestHttpEntity);
         TaskStatusResponse response = null;
+        String str = null;
         try {
             ResponseEntity<String> result = restTemplate.getForEntity(url, String.class, requestHttpEntity);
-            String str = result.getBody();
+            str = result.getBody();
             response = new ObjectMapper().readValue(str, TaskStatusResponse.class);
             System.out.println("------task status -------" + result.getBody());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return response;
+        return str;
    }
    
    // ------获取失败数据------
   //  @GetMapping("/live_data/task/fail_data/get")
    @RequestMapping(value = "/live_data/task/fail_data/get", method = {RequestMethod.HEAD, RequestMethod.GET})
-    public Fail_DataResponse fail_data() {
+    public String fail_data() {
         String url = "https://webcast.bytedance.com/api/live_data/task/fail_data/get";
        RestTemplate restTemplate = new RestTemplate();
        HttpHeaders headers = new HttpHeaders();
@@ -302,23 +307,24 @@ public class MainController {
        fail_DataRequest.setPage_size(5);
        fail_DataRequest.setMsg_type("live_comment");
        HttpEntity<Fail_DataRequest> requestHttpEntity = new HttpEntity<>(fail_DataRequest, headers);
-       System.out.println("------requestHttpEntity------" + requestHttpEntity);
+       // System.out.println("------requestHttpEntity------" + requestHttpEntity);
        Fail_DataResponse response = null;
+       String str = null;
        try {
            ResponseEntity<String> result = restTemplate.getForEntity(url, String.class, requestHttpEntity);
-           String str = result.getBody();
+           str = result.getBody();
            response = new ObjectMapper().readValue(str, Fail_DataResponse.class);
            System.out.println("------task status -------" + result.getBody());
        } catch (IOException e) {
            e.printStackTrace();
        }
-       return response;
+       return str;
    }
    
    // ------粉丝团------
    // @GetMapping("/live_data/fans_club/get_info")
    @RequestMapping(value = "/live_data/fans_club/get_info", method = {RequestMethod.HEAD, RequestMethod.GET})
-   public Fans_ClubResponse Fans_ClubInfo() {
+   public String Fans_ClubInfo() {
        String url = "https://webcast.bytedance.com/api/live_data/fans_club/get_info";
        RestTemplate restTemplate = new RestTemplate();
        HttpHeaders headers = new HttpHeaders();
@@ -331,17 +337,18 @@ public class MainController {
        fans_ClubRequest.setUser_openids("1,2");
        
        HttpEntity<Fans_ClubRequest> requestHttpEntity = new HttpEntity<>(fans_ClubRequest, headers);
-       System.out.println("------requestHttpEntity------" + requestHttpEntity);
+       // System.out.println("------requestHttpEntity------" + requestHttpEntity);
        Fans_ClubResponse response = null;
+       String str = null;
        try {
            ResponseEntity<String> result = restTemplate.getForEntity(url, String.class, requestHttpEntity);
-           String str = result.getBody();
+           str = result.getBody();
            response = new ObjectMapper().readValue(str, Fans_ClubResponse.class);
            System.out.println("------task status -------" + result.getBody());
        } catch (IOException e) {
            e.printStackTrace();
        }
-       return response;
+       return str;
    }
    
 
