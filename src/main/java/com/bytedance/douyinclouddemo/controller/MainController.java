@@ -51,7 +51,7 @@ public class MainController {
     private String accessToken = "0801121846396b634661733637752f3243473141686c48776a513d3d";
     // ------获取access token-------
     // @PostMapping("api/getAccessToken")
-    @RequestMapping(value = "api/getAccessToken", method = {RequestMethod.HEAD, RequestMethod.POST})
+    @RequestMapping(value = "/api/getAccessToken", method = {RequestMethod.HEAD, RequestMethod.POST})
     public AccessTokenResponse getAccessToken() throws JsonProcessingException {
         String url = "https://minigame.zijieapi.com/mgplatform/api/apps/v2/token";
         // 构建发送响应等
