@@ -48,7 +48,7 @@ public class MainController {
         return response;
     }
     
-    private String accessToken = "0801121846396b634661733637752f3243473141686c48776a513d3d";
+    private String accessToken = "0801121846397069314539614255336d5278303275624e4a54673d3d";
     // ------获取access token-------
     // @PostMapping("api/getAccessToken")
     @RequestMapping(value = "/api/getAccessToken", method = {RequestMethod.HEAD, RequestMethod.POST})
@@ -123,7 +123,7 @@ public class MainController {
     
     // ------ 开启任务推送 ------
     // @PostMapping("/live_data/task/start")
-    @RequestMapping(value = "/live_data/task/start", method = {RequestMethod.HEAD, RequestMethod.POST}) 
+    @RequestMapping(value = "/api/live_data/task/start", method = {RequestMethod.HEAD, RequestMethod.POST}) 
     public String startTask(@RequestBody(required = false) String jsonData) {
         String url = "https://webcast.bytedance.com/api/live_data/task/start";
         RestTemplate restTemplate = new RestTemplate();
@@ -131,7 +131,7 @@ public class MainController {
         HttpHeaders headers = new HttpHeaders();
         headers.clear();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("access-token", accessToken);
+        headers.set("access-token", accessToken = "0801121846397069314539614255336d5278303275624e4a54673d3d");
         TaskStartRequest taskStartRequest = new TaskStartRequest();
         taskStartRequest.setAppid(appId);
         taskStartRequest.setRoomid(appRoomId);
@@ -165,7 +165,7 @@ public class MainController {
         HttpHeaders headers = new HttpHeaders();
         headers.clear();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("x-token", accessToken);
+        headers.set("x-token", accessToken = "0801121846397069314539614255336d5278303275624e4a54673d3d");
         
         //  Map<String, String> map = new HashMap<>();
         
@@ -231,7 +231,7 @@ public class MainController {
    
     // ------停止推送------
     // @PostMapping("/live_data/task/stop")
-    @RequestMapping(value = "/live_data/task/stop", method = {RequestMethod.HEAD, RequestMethod.POST})
+    @RequestMapping(value = "/api/live_data/task/stop", method = {RequestMethod.HEAD, RequestMethod.POST})
     public String TaskStop() {
         String url = "https://webcast.bytedance.com/api/live_data/task/stop";
         RestTemplate restTemplate = new RestTemplate();
@@ -263,14 +263,14 @@ public class MainController {
     
     // ------获取任务状态------
    // @GetMapping("/live_data/task/status")
-   @RequestMapping(value = "/live_data/task/status", method = {RequestMethod.HEAD, RequestMethod.GET})
+   @RequestMapping(value = "/api/live_data/task/status", method = {RequestMethod.HEAD, RequestMethod.GET})
    public String TaskStatus() {
         String url = "https://webcast.bytedance.com/api/live_data/task/get";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.clear();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("access-token", accessToken);
+        headers.set("access-token", accessToken = "0801121846397069314539614255336d5278303275624e4a54673d3d");
         TaskStatusRequest taskStatusRequest = new TaskStatusRequest();
         taskStatusRequest.setAppid(appId);
         taskStatusRequest.setRoomid(appRoomId);
@@ -292,14 +292,14 @@ public class MainController {
    
    // ------获取失败数据------
   //  @GetMapping("/live_data/task/fail_data/get")
-   @RequestMapping(value = "/live_data/task/fail_data/get", method = {RequestMethod.HEAD, RequestMethod.GET})
+   @RequestMapping(value = "/api/live_data/task/fail_data/get", method = {RequestMethod.HEAD, RequestMethod.GET})
     public String fail_data() {
         String url = "https://webcast.bytedance.com/api/live_data/task/fail_data/get";
        RestTemplate restTemplate = new RestTemplate();
        HttpHeaders headers = new HttpHeaders();
        headers.clear();
        headers.setContentType(MediaType.APPLICATION_JSON);
-       headers.set("access-token", accessToken);
+       headers.set("access-token", accessToken = "0801121846397069314539614255336d5278303275624e4a54673d3d");
        Fail_DataRequest fail_DataRequest = new Fail_DataRequest();
        fail_DataRequest.setRoomid(appRoomId);
        fail_DataRequest.setAppid(appId);
@@ -323,14 +323,14 @@ public class MainController {
    
    // ------粉丝团------
    // @GetMapping("/live_data/fans_club/get_info")
-   @RequestMapping(value = "/live_data/fans_club/get_info", method = {RequestMethod.HEAD, RequestMethod.GET})
+   @RequestMapping(value = "/api/live_data/fans_club/get_info", method = {RequestMethod.HEAD, RequestMethod.GET})
    public String Fans_ClubInfo() {
        String url = "https://webcast.bytedance.com/api/live_data/fans_club/get_info";
        RestTemplate restTemplate = new RestTemplate();
        HttpHeaders headers = new HttpHeaders();
        headers.clear();
        headers.setContentType(MediaType.APPLICATION_JSON);
-       headers.set("access-token", accessToken);
+       headers.set("access-token", accessToken = "0801121846397069314539614255336d5278303275624e4a54673d3d");
        Fans_ClubRequest fans_ClubRequest = new Fans_ClubRequest();
        fans_ClubRequest.setRoomid(appRoomId);
        fans_ClubRequest.setAnchor_openid("1001");
