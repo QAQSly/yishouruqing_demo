@@ -106,17 +106,34 @@ public class MainController {
 
     // ------ 直播数据回调 ------
     @RequestMapping(value = "/live_data_callback", method = {RequestMethod.HEAD, RequestMethod.POST})
-    public JsonResponse liveDataCallBack(@RequestBody(required = false) String jsonData)
+    public String liveDataCallBack(@RequestBody(required = false) String jsonData)
     {
-        JsonResponse response = new JsonResponse();
-        if (jsonData != null) {
-            // 第三方
-            temp = jsonData;
-        } 
-        
-        
-        response.success(jsonData);
-        return response;
+        String url = "https://webcast.bytedance.com/api/live_data/task/start";
+        RestTemplate restTemplate = new RestTemplate();
+        // JsonResponse response = new JsonResponse();
+        HttpHeaders headers = new HttpHeaders();
+        headers.clear();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("access-token", accessToken = "0801121846397069314539614255336d5278303275624e4a54673d3d");
+        TaskStartRequest taskStartRequest = new TaskStartRequest();
+        taskStartRequest.setAppid(appId);
+        taskStartRequest.setRoomid(appRoomId);
+        taskStartRequest.setMsg_type("live_comment");
+        HttpEntity<TaskStartRequest> requestHttpEntity = new HttpEntity<>(taskStartRequest, headers);
+
+        ResponseEntity<String> result = restTemplate.postForEntity(url, requestHttpEntity, String.class);
+
+        TaskStartResponse response = null;
+        // System.out.println("------task start -------" + result.getBody());
+        String responseBody = null;
+        try {
+            responseBody = result.getBody();
+            response = new ObjectMapper().readValue(responseBody, TaskStartResponse.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println(jsonData);
+        return responseBody;
             // 客户端
        
     }
@@ -263,7 +280,7 @@ public class MainController {
     
     // ------获取任务状态------
    // @GetMapping("/live_data/task/status")
-   @RequestMapping(value = "/api/live_data/task/status", method = {RequestMethod.HEAD, RequestMethod.GET})
+   @RequestMapping(value = "/api/live_data/task/get", method = {RequestMethod.HEAD, RequestMethod.GET})
    public String TaskStatus() {
         String url = "https://webcast.bytedance.com/api/live_data/task/get";
         RestTemplate restTemplate = new RestTemplate();
