@@ -102,6 +102,15 @@ public class MainController {
         //System.out.println(jsonData);
         return own;
     }
+    @RequestMapping(value = "/v1/ping", method = {RequestMethod.HEAD, RequestMethod.GET})
+    public String getPing(@RequestBody(required = false) String jsonData)
+    {
+
+        String str = jsonData;
+        //System.out.println(jsonData);
+        return str;
+    }
+    
     private String temp;
 
     // ------ 直播数据回调 ------
@@ -135,7 +144,6 @@ public class MainController {
         //System.out.println(jsonData);
         return responseBody;
             // 客户端
-       
     }
     
     // ------ 开启任务推送 ------
