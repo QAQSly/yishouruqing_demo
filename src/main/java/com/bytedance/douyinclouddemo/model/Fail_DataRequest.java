@@ -12,6 +12,6 @@ public class Fail_DataRequest {
     String roomid;
     String appid;
     String msg_type;
-    Integer page_num;
-    Integer page_size;
+    int page_num;
+    int page_size;
 }
