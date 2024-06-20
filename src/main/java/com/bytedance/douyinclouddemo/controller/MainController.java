@@ -10,6 +10,7 @@ import org.springframework.http.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -322,24 +323,34 @@ public class MainController {
   //  @GetMapping("/live_data/task/fail_data/get")
    @RequestMapping(value = "/api/live_data/task/fail_data/get", method = {RequestMethod.HEAD, RequestMethod.GET})
     public String fail_data() {
-        String url = "https://webcast.bytedance.com/api/live_data/task/fail_data/get";
+        String baseUrl = "https://webcast.bytedance.com/api/live_data/task/fail_data/get";
+       UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl)
+               .queryParam("roomid", appRoomId)
+               .queryParam("appid", appId)
+               .queryParam("msg_type", "live_comment")
+               .queryParam("page_num", 1)
+               .queryParam("page_size", 5);
+       String url = builder.toUriString();
+       
        RestTemplate restTemplate = new RestTemplate();
        HttpHeaders headers = new HttpHeaders();
        headers.clear();
        headers.setContentType(MediaType.APPLICATION_JSON);
-       headers.set("access-token", accessToken = "0801121846397069314539614255336d5278303275624e4a54673d3d");
-       Fail_DataRequest fail_DataRequest = new Fail_DataRequest();
+       headers.set("access-token", accessToken = "0801121846397167486e2f37763562376b58525a637150346e673d3d");
+      /* Fail_DataRequest fail_DataRequest = new Fail_DataRequest();
        fail_DataRequest.setRoomid(appRoomId);
        fail_DataRequest.setAppid(appId);
        fail_DataRequest.setPage_num(1);
        fail_DataRequest.setPage_size(5);
-       fail_DataRequest.setMsg_type("live_comment");
-       HttpEntity<Fail_DataRequest> requestHttpEntity = new HttpEntity<>(fail_DataRequest, headers);
-       // System.out.println("------requestHttpEntity------" + requestHttpEntity);
+       fail_DataRequest.setMsg_type("live_comment");*/
+       HttpEntity<?> requestHttpEntity = new HttpEntity<>( headers);
+       System.out.println("------requestHttpEntity------" + requestHttpEntity);
+     
+       
        Fail_DataResponse response = null;
        String str = null;
        try {
-           ResponseEntity<String> result = restTemplate.getForEntity(url, String.class, requestHttpEntity);
+           ResponseEntity<String> result = restTemplate.exchange(url, HttpMethod.GET, requestHttpEntity, String.class);
            str = result.getBody();
            response = new ObjectMapper().readValue(str, Fail_DataResponse.class);
            System.out.println("------task status -------" + result.getBody());
