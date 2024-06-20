@@ -3,6 +3,7 @@ package com.bytedance.douyinclouddemo.controller;
 import com.bytedance.douyinclouddemo.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -125,7 +126,7 @@ public class MainController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("access-token", accessToken = "0801121846397069314539614255336d5278303275624e4a54673d3d");
         TaskStartRequest taskStartRequest = new TaskStartRequest();
-        taskStartRequest.setAppid(appId);
+        taskStartRequest.setApp_id(appId);
         taskStartRequest.setRoomid(appRoomId);
         taskStartRequest.setMsg_type("live_comment");
         HttpEntity<TaskStartRequest> requestHttpEntity = new HttpEntity<>(taskStartRequest, headers);
@@ -150,6 +151,7 @@ public class MainController {
     // @PostMapping("/live_data/task/start")
     @RequestMapping(value = "/api/live_data/task/start", method = {RequestMethod.HEAD, RequestMethod.POST}) 
     public String startTask(@RequestBody(required = false) String jsonData) {
+        // String url = "https://webcast.bytedance.com/api/live_data/task/start";
         String url = "https://webcast.bytedance.com/api/live_data/task/start";
         RestTemplate restTemplate = new RestTemplate();
         // JsonResponse response = new JsonResponse();
@@ -158,11 +160,12 @@ public class MainController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("access-token", accessToken = "0801121846397069314539614255336d5278303275624e4a54673d3d");
         TaskStartRequest taskStartRequest = new TaskStartRequest();
-        taskStartRequest.setAppid(appId);
+        taskStartRequest.setApp_id(appId);
         taskStartRequest.setRoomid(appRoomId);
         taskStartRequest.setMsg_type("live_comment");
         HttpEntity<TaskStartRequest> requestHttpEntity = new HttpEntity<>(taskStartRequest, headers);
-        
+        Map<String, String> map = new HashMap<>();
+        map.put("app_id", appId);
         ResponseEntity<String> result = restTemplate.postForEntity(url, requestHttpEntity, String.class);
         
         TaskStartResponse response = null;
@@ -266,7 +269,7 @@ public class MainController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("access-token", accessToken);
         TaskStartRequest taskStartRequest = new TaskStartRequest();
-        taskStartRequest.setAppid(appId);
+        taskStartRequest.setApp_id(appId);
         taskStartRequest.setRoomid(appRoomId);
         taskStartRequest.setMsg_type("live_comment");
         HttpEntity<TaskStartRequest> requestHttpEntity = new HttpEntity<>(taskStartRequest, headers);

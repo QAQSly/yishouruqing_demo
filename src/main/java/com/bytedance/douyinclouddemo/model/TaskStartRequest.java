@@ -10,6 +10,6 @@ import lombok.Data;
 public class TaskStartRequest {
     @JsonFormat
     String roomid;
-    String appid;
+    String app_id;
     String msg_type;
 }
