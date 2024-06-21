@@ -116,12 +116,14 @@ public class MainController {
     @RequestMapping(value = "/api/post", method = {RequestMethod.HEAD, RequestMethod.POST})
     public String receiveAndProcessJsonData(@RequestBody(required = false) String jsonData)
     {
+        System.out.println("---推送数据:---" + jsonData);
         if (jsonData == null) {
             return temp;
         }
         if (jsonData != null) {
             temp = jsonData;
         }
+        System.out.println("---缓存数据---" + temp);
         
         return temp;
     }
