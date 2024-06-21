@@ -114,8 +114,9 @@ public class MainController {
     // ------ 接收post请求 测试用------
     private String temp = "";
     @RequestMapping(value = "/api/post", method = {RequestMethod.HEAD, RequestMethod.POST})
-    public String receiveAndProcessJsonData(@RequestBody(required = false) String jsonData)
+    public String receiveAndProcessJsonData(@RequestBody String jsonData)
     {
+        
         System.out.println("---推送数据:---" + jsonData);
         if (jsonData == null) {
             return temp;
