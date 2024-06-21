@@ -16,3 +16,6 @@ app:
     IkkadLfz7O/a5UR45p/OOCCG6ewAWVbsuzR/Z+v1v76CBU+mTG/wPjqdpfg=,
     gx7pmjQfhBaDOG2XkWI2peZ66YFWkCWRjZXpTqb23O/epru+sxWyTV/3Ufs=,
     P7zDZzpeO215SpUptB+aURb1+zC14UC9MY1+MHszKoF0p5gzYk8CNEbey60=
+  private_key_pem:
+                  path: classpath:private_key.pem
+    
