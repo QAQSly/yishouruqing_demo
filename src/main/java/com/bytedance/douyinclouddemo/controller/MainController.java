@@ -506,7 +506,7 @@ public class MainController {
                 appId, nonce, timestamp, version, signatureBase64);
         System.out.println("------byte_Authorization------" + byte_Authorization);
         
-        byte_Authorization = "SHA256-RSA2048 appid=\"tt654b13f6fa7d5b6910\",nonce_str=\"DC10180A100073E70A48F195DA2AF2E6\",timestamp=\"1718952925\",key_version=\"1\",signature=\"iW4oWmImphxdOIJAIWHyJd2kU5fmaPX9H1YryEAMgb6rK/4/LvEEH5YpOXQ81bBKK/PcXMUBP7Uiv53HZb8oOkZX4oSPw9jbEavXWsuAbGPi1BgwwBAmkxB/j4exO5lxbsaRYX IYciFMvmdCXTFPPd/rcMI0OTZQ2O7Jmx8GojctVLJpdiHEyZFhrv+7jQMeB/ff66ULAP0H3LPB3/dhc6b5PfAHtOSNv14yGlPngkjqNOOiOtzqbXuVS0AWScG3b3gsfd24b9O66cExBcpb7q+WnLU41Cq9yWVfsOUc/IoIH8NDOX5MSfeFzufX+s1nknS8g6+Vwp63nwx6RIEuiw==\"";
+        byte_Authorization = "SHA256-RSA2048 appid=\"tt654b13f6fa7d5b6910\",nonce_str=\"DC10180A100073E70A48F195DA2AF2E6\",timestamp=\"1718957342\",key_version=\"1\",signature=\"KBfswPYy1mOvgkwy6lDb2kLm0QyjrhjhCSjYTJDhAwH7FZhHJGn+8wTxyKFSQzelkqTA0VfJVvxpVof+87Ab/o0XWY8yNry1QQOFTP8x1JYXY5M/SGoai94IoHgAubT6I+4gOAgnxU2eGOUvc4IY7e+wIddn+N1QLngFrFvGXZWMoqWhzXcQMeLqvxM6Q9RzbmFG+gucLRHnAgV3JcutPfUJkwGLDr3PrkSs0gx9Io41DCWJJuX38Nh5oAannX+gA1O8yVs84VyNDdavjlJr/Jg+RbM+tUqcIxLVkWZtONpWQNGv5eZI86ql+AiEd1TFShwRZs7iQrO59zVRjPEr1g==\"";
         headers.set("Byte-Authorization", byte_Authorization);
         headers.set("Accept", "application/json");
         
