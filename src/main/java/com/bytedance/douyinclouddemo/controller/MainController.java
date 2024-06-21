@@ -112,20 +112,18 @@ public class MainController {
       
     }
     // ------ 接收post请求 测试用------
+    private String temp = "";
     @RequestMapping(value = "/api/post", method = {RequestMethod.HEAD, RequestMethod.POST})
-    public AccessTokenResponse receiveAndProcessJsonData(@RequestBody(required = false) String jsonData)
+    public String receiveAndProcessJsonData(@RequestBody(required = false) String jsonData)
     {
-        
-        ObjectMapper mapper = new ObjectMapper();
-        AccessTokenResponse own = null;
-        try {
-            own = mapper.readValue(jsonData, AccessTokenResponse.class);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (jsonData == null) {
+            return temp;
         }
-        own.StringToOwn(own);
-        //System.out.println(jsonData);
-        return own;
+        if (jsonData != null) {
+            temp = jsonData;
+        }
+        
+        return temp;
     }
     @RequestMapping(value = "/v1/ping", method = {RequestMethod.HEAD, RequestMethod.GET})
     public String getPing(@RequestBody(required = false) String jsonData)
@@ -136,7 +134,7 @@ public class MainController {
         return str;
     }
     
-    private String temp;
+    // private String temp;
 
     // ------ 直播数据回调 ------
     @RequestMapping(value = "/live_data_callback", method = {RequestMethod.HEAD, RequestMethod.POST})
@@ -518,6 +516,7 @@ public class MainController {
         HttpEntity<Map<String, String>> requestHttpEntity = new HttpEntity<>(map, headers);
         System.out.println("------requestHttpEntity------" + requestHttpEntity);
         ResponseEntity<String> result = restTemplate.exchange(Path, HttpMethod.POST, requestHttpEntity, String.class);
+        System.out.println("------result------" + result.getBody());
         return result.getBody();
     }
     
