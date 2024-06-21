@@ -507,15 +507,15 @@ public class MainController {
         System.out.println("------byte_Authorization------" + byte_Authorization);
         
         byte_Authorization = "SHA256-RSA2048 appid=\"tt654b13f6fa7d5b6910\",nonce_str=\"DC10180A100073E70A48F195DA2AF2E6\",timestamp=\"1718957342\",key_version=\"1\",signature=\"KBfswPYy1mOvgkwy6lDb2kLm0QyjrhjhCSjYTJDhAwH7FZhHJGn+8wTxyKFSQzelkqTA0VfJVvxpVof+87Ab/o0XWY8yNry1QQOFTP8x1JYXY5M/SGoai94IoHgAubT6I+4gOAgnxU2eGOUvc4IY7e+wIddn+N1QLngFrFvGXZWMoqWhzXcQMeLqvxM6Q9RzbmFG+gucLRHnAgV3JcutPfUJkwGLDr3PrkSs0gx9Io41DCWJJuX38Nh5oAannX+gA1O8yVs84VyNDdavjlJr/Jg+RbM+tUqcIxLVkWZtONpWQNGv5eZI86ql+AiEd1TFShwRZs7iQrO59zVRjPEr1g==\"";
-        headers.set("Byte-Authorization", byte_Authorization);
-        headers.set("Accept", "application/json");
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Byte-Authorization", byte_Authorization);
         
         // 构造请求体
         Map<String, String> map = new HashMap<>();
         map.put("appid", appId);
         map.put("order_id", "1xxx");
         // 发送POST 请求
-        HttpEntity<?> requestHttpEntity = new HttpEntity<>(headers);
+        HttpEntity<Map<String, String>> requestHttpEntity = new HttpEntity<>(map, headers);
         System.out.println("------requestHttpEntity------" + requestHttpEntity);
         ResponseEntity<String> result = restTemplate.exchange(Path, HttpMethod.POST, requestHttpEntity, String.class);
         return result.getBody();
